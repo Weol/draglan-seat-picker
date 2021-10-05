@@ -11,7 +11,7 @@ namespace Backend.Controllers
         [FunctionName("PutSeat")]
         public static IActionResult PutSeat(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "seats/{id:int}")] HttpSeatModel seat, 
-            [CosmosDB(databaseName: "ToDoItems", collectionName: "Items", ConnectionStringSetting = "CosmosDBConnection")] out dynamic document,
+            [CosmosDB(databaseName: "ToDotems", collectionName: "Items", ConnectionStringSetting = "CosmosDBConnection")] out dynamic document,
             ILogger log)
         {
             document = new CosmosSeatModel
