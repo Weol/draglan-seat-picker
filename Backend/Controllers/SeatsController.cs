@@ -1,4 +1,5 @@
 ﻿using DragLanSeatPicker.Models.Seat;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -8,20 +9,15 @@ namespace Backend.Controllers
 {
     public static class SeatsController
     {
-        [FunctionName("PutSeat")]
+        [Authorize]
+        [FunctionName("Reserve")]
         public static IActionResult PutSeat(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "seats/{id:int}")] HttpSeatModel seat, 
-            [CosmosDB(databaseName: "ToDotems", collectionName: "Items", ConnectionStringSetting = "CosmosDBConnection")] out dynamic document,
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "seats/{id:int}")] Seat seat, 
+            HttpRequest request,
+            [CosmosDB(databaseName: "draglan", collectionName: "seats", ConnectionStringSetting = "CosmosDBConnection")] out dynamic document,
             ILogger log)
         {
-            document = new CosmosSeatModel
-            {
-                Id = seat.Id, 
-                Mail = seat.Mail,
-                Name = seat.Name,
-                Password = seat.Password
-            };
-
+            document = seat;
             return new AcceptedResult();
         }
     }
