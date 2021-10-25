@@ -3,43 +3,102 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
+import sha256 from 'crypto-js/sha256';
+import CryptoJS from 'crypto-js';
+import { Redirect } from "react-router-dom";
+import { Alert, AlertTitle } from '@mui/material';
+import { useHistory } from "react-router-dom";
+import validator from 'validator'
 
 const theme = createTheme();
 
-export default function SignUp() {
+export default function SignUp(props) {
+    const history = useHistory()
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         // eslint-disable-next-line no-console
-        console.log({
-            firstName: data.get('firstName'),
-            lastName: data.get('lastName'),
-            email: data.get('email'),
-            password: data.get('password'),
-        });
-    };
+
+        var firstName = data.get('firstName')
+        var lastName = data.get('lastName')
+        var email = data.get('email')
+        var password = data.get('password')
+
+        if (email.length == 0 || password.length == 0 || lastName.length == 0 || firstName.length == 0) {
+            props.SetMessage(
+                <Alert severity="warning">
+                    Venligst fyll inn alle feltene
+                </Alert>
+            )
+            return
+        }
+
+        if (!validator.isEmail(email)) {
+            props.SetMessage(
+                <Alert severity="warning">
+                    Venligst skriv inn en ekte e-post adresse &#128580;
+                </Alert>
+            )
+            return
+        }
+
+        if (password.length < 6) {
+            props.SetMessage(
+                <Alert severity="warning">
+                    Passordet ditt må være minst 6 tegn &#128548;
+                </Alert>
+            )
+            return
+        }
+
+        const name = firstName + " " + lastName
+        const hash = sha256(email + password)
+
+        const body = JSON.stringify({
+            id: hash.toString(CryptoJS.enc.Hex),
+            name: name
+        })
+        console.log(body)
+
+        fetch("http://localhost:3000/api/signup", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        }).then(response => {
+            if (response.status == 202) {
+                props.SetMessage(
+                    <Alert severity="success">
+                        <AlertTitle>Din bruker er blitt opprettet</AlertTitle>
+                        Du kan nå logge in med ditt brukernavn og passord
+                    </Alert>
+                )
+                history.push("/")
+            } else if (response.status == 409) {
+                props.SetMessage(
+                    <Alert severity="warning">
+                        Denne e-post adressen er allerede registrert
+                    </Alert>
+                )
+            } else {
+                props.SetMessage(
+                    <Alert severity="error">
+                        Noe gikk galt
+                    </Alert>
+                )
+            }
+        })
+    }
+
+    if (props.User != null) return <Redirect to="/" />
 
     return (
         <ThemeProvider theme={theme}>

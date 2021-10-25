@@ -30,4 +30,7 @@
         <HintPath>..\..\..\..\AppData\Roaming\JetBrains\Rider2021.2\azure-functions-coretools\3.0.3734\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       </Reference>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Services" />
+    </ItemGroup>
 </Project>

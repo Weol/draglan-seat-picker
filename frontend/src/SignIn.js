@@ -1,12 +1,8 @@
-import * as React from 'react';
+import React, { useState } from 'react'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
@@ -14,21 +10,84 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Divider } from '@mui/material';
 import { useHistory } from "react-router-dom";
+import sha256 from 'crypto-js/sha256';
+import CryptoJS from 'crypto-js';
+import Cookies from 'universal-cookie';
+import { Redirect } from "react-router-dom";
+import { Alert } from '@mui/material';
+import validator from 'validator'
 
 const theme = createTheme();
+const cookies = new Cookies();
 
-export default function SignIn() {
-    const history = useHistory();
+function parseJwt(token) {
+    console.log(token)
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+};
+
+
+export default function SignIn(props) {
+    const history = useHistory()
 
     const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        event.preventDefault()
+        const data = new FormData(event.currentTarget)
+
+        var email = data.get('email')
+        var password = data.get('password')
+
+        if (email.length == 0 || password.length == 0) {
+            props.SetMessage(
+                <Alert severity="warning">
+                    Fyll inn alle feltene
+                </Alert>
+            )
+            return
+        }
+
+        if (!validator.isEmail(email)) {
+            props.SetMessage(
+                <Alert severity="warning">
+                    Venligst skriv inn en ekte e-post adresse &#128580;
+                </Alert>
+            )
+            return
+        }
+
+        const hash = sha256(email + password)
+
+        fetch("http://localhost:3000/api/login", {
+            method: "POST",
+            body: hash.toString(CryptoJS.enc.Hex)
+        }).then(response => {
+            if (response.status == 401) {
+                props.SetMessage(
+                    <Alert severity="warning">
+                        Feil e-post eller passord
+                    </Alert>
+                )
+            } else if (response.status != 200) {
+                props.SetMessage(
+                    <Alert severity="error">
+                        Noe gikk galt
+                    </Alert>
+                )
+            } else {
+                response.text().then(token => {
+                    props.OnUserLoggedIn(parseJwt(token))
+                    history.push("/")
+                })
+            }
+        })
     };
+
+    if (props.User != null) return <Redirect to="/" />
 
     return (
         <ThemeProvider theme={theme}>
@@ -42,6 +101,7 @@ export default function SignIn() {
                         alignItems: 'center',
                     }}
                 >
+                    {props.children}
                     <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                         <LockOutlinedIcon />
                     </Avatar>
@@ -56,6 +116,7 @@ export default function SignIn() {
                             id="email"
                             label="E-post adresse"
                             name="email"
+                            type="email"
                             autoComplete="email"
                             autoFocus
                         />
@@ -82,7 +143,9 @@ export default function SignIn() {
                             fullWidth
                             variant="outlined"
                             sx={{ mt: 3, mb: 2 }}
-                            onClick={() => { history.push("/signup") }}
+                            onClick={() => {
+                                history.push("/signup")
+                            }}
                         >
                             Ny bruker
                         </Button>

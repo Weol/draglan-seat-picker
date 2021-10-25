@@ -1,35 +1,36 @@
 import React, { useState } from 'react'
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import Cookies from 'universal-cookie';
 import './App.css';
 import SignIn from './SignIn.js';
 import SignUp from './SignUp.js';
+import { Snackbar } from '@mui/material';
 import SeatPicker from './SeatPicker.js';
 
 const cookies = new Cookies();
 
 function App() {
 	const [user, setUser] = useState(cookies.get('user'));
+	const [message, setMessage] = useState(null);
 
-	function OnUserLoggedIn(user) {
+	const onUserLoggedIn = (user) => {
+		cookies.set("user", user)
 		setUser(user)
-
-		cookies.set('user', user, { path: '/' });
 	}
 
-	return (<Router>
-		<Switch>
-			<Route path="/signin">
-				<SignIn />
-			</Route>
-			<Route path="/signup">
-				<SignUp />
-			</Route>
-			<Route path="/">
-				{user == null ? <SignIn /> : <SeatPicker />}
-			</Route>
-		</Switch>
-	</Router>)
+	return (
+		<Router>
+			<Snackbar anchorOrigin={{ vertical: "top", horizontal: "center" }} autoHideDuration={6000} open={message != null} onClose={() => setMessage(null)}>
+				{message && message}
+			</Snackbar>
+			<Switch>
+				<Route path="/signin" render={() => <SignIn SetMessage={setMessage} User={user} OnUserLoggedIn={onUserLoggedIn} />} />
+				<Route path="/signup" render={() => <SignUp SetMessage={setMessage} User={user} />} />
+				<Route path="/">
+					{user == null ? <Redirect to="/signin" /> : <SeatPicker />}
+				</Route>
+			</Switch>
+		</Router >)
 }
 
 export default App;

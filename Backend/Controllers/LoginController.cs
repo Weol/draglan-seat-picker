@@ -62,10 +62,12 @@ namespace DragLanSeatPicker.Controllers
             [CosmosDB(
                 "draglan",
                 "users",
-                ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
             ILogger log)
         {
+            if (string.IsNullOrWhiteSpace(user.Id) || string.IsNullOrWhiteSpace(user.Name))
+                return new BadRequestResult();
+            
             if (user.IsAdmin) return new UnauthorizedResult();
 
             if (await FindUser(client, user.Id) != null) return new ConflictResult();
@@ -99,7 +101,7 @@ namespace DragLanSeatPicker.Controllers
             return null;
         }
 
-        public static string GetRequestBody(HttpRequest request)
+        private static string GetRequestBody(HttpRequest request)
         {
             var bodyStream = new StreamReader(request.Body);
             bodyStream.BaseStream.Seek(0, SeekOrigin.Begin);
