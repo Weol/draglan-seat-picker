@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using DragLanSeatPicker.SigningService;
+using DragLanSeatPicker.Services.TokenService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Documents;
@@ -14,8 +12,7 @@ using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using User = DragLanSeatPicker.Models.User.User;
+using User = DragLanSeatPicker.Models.User;
 
 namespace DragLanSeatPicker.Controllers
 {
@@ -58,16 +55,18 @@ namespace DragLanSeatPicker.Controllers
 
         [FunctionName("Signup")]
         public async Task<IActionResult> Signup(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "signup")] User user,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "signup")]
+            User user,
             [CosmosDB(
                 "draglan",
                 "users",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ConnectionStringSetting = "CosmosDBConnection")]
+            DocumentClient client,
             ILogger log)
         {
             if (string.IsNullOrWhiteSpace(user.Id) || string.IsNullOrWhiteSpace(user.Name))
                 return new BadRequestResult();
-            
+
             if (user.IsAdmin) return new UnauthorizedResult();
 
             if (await FindUser(client, user.Id) != null) return new ConflictResult();
@@ -77,10 +76,11 @@ namespace DragLanSeatPicker.Controllers
             return new AcceptedResult();
         }
 
+
         private static async Task CreateUser(IDocumentClient client, User user)
         {
-            Uri collectionUri = UriFactory.CreateDocumentCollectionUri("draglan", "users");
-            await client.CreateDocumentAsync(collectionUri, user); 
+            var collectionUri = UriFactory.CreateDocumentCollectionUri("draglan", "users");
+            await client.CreateDocumentAsync(collectionUri, user);
         }
 
         private static async Task<User> FindUser(IDocumentClient client, string id)

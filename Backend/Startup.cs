@@ -1,5 +1,4 @@
-﻿using DragLanSeatPicker.SigningService;
-using DragLanSeatPicker.TokenService;
+﻿using DragLanSeatPicker.Services.TokenService;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
-using System.Text;
-using DragLanSeatPicker.Models.User;
-using DragLanSeatPicker.SigningService;
-using Microsoft.Extensions.Options;
+using DragLanSeatPicker.Models;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace DragLanSeatPicker.TokenService
+namespace DragLanSeatPicker.Services.TokenService
 {
     public class RsaTokenService : ITokenService
     {

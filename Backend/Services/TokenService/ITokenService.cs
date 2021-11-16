@@ -1,8 +1,6 @@
-﻿using System;
-using DragLanSeatPicker.Models.User;
-using Microsoft.IdentityModel.Tokens;
+﻿using DragLanSeatPicker.Models;
 
-namespace DragLanSeatPicker.SigningService
+namespace DragLanSeatPicker.Services.TokenService
 {
     public interface ITokenService
     {

@@ -1,7 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace DragLanSeatPicker.Models.User
+namespace DragLanSeatPicker.Models
 {
     public class User
     {

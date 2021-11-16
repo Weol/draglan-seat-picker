@@ -27,7 +27,7 @@ function App() {
 				<Route path="/signin" render={() => <SignIn SetMessage={setMessage} User={user} OnUserLoggedIn={onUserLoggedIn} />} />
 				<Route path="/signup" render={() => <SignUp SetMessage={setMessage} User={user} />} />
 				<Route path="/">
-					{user == null ? <Redirect to="/signin" /> : <SeatPicker />}
+					{user == null ? <Redirect to="/signin" /> : <SeatPicker User={user} SetMessage={setMessage} />}
 				</Route>
 			</Switch>
 		</Router >)
