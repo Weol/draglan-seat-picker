@@ -17,10 +17,10 @@ import { Alert, AlertTitle } from '@mui/material';
 const row1 = []
 row1.push({
 	title: 1,
-	top: 27.1,
+	top: 29.9,
 	left: 36.9,
 	width: 8.72,
-	height: 2.3
+	height: 2.5
 })
 
 for (let i = 1; i < 7; i++) {
@@ -38,8 +38,8 @@ row2.push({
 	title: 1,
 	top: row1[0].top + row1[0].height * 4,
 	left: 36.9,
-	width: 8.72,
-	height: 2.3
+	width: row1[0].width,
+	height: row1[0].height
 })
 
 for (let i = 1; i < 7; i++) {
@@ -100,8 +100,8 @@ function SeatPicker(props) {
 	}, []);
 
 	const handleClickOpenPickSeatDialog = (element) => {
-		setPickSeatDialogOpen(true);
 		setSelectedSeat({ id: element.target.id, title: element.target.title })
+		setPickSeatDialogOpen(true);
 	};
 
 	const handleClosePickSeatDialog = () => {
@@ -161,18 +161,19 @@ function SeatPicker(props) {
 				position: "absolute",
 				width: "100%",
 				height: "calc(100% - 64px)",
-				overflowY: "hidden",
+				overflowX: "hidden",
 			}}>
 				<Box sx={{
-					margin: "auto",
-					height: "calc(100% - 2em)",
+					marginTop: "1em",
+					marginBottom: "auto",
+					marginLeft: "auto",
+					marginRight: "auto",
 					position: "relative"
 				}}>
 					<img src={background} alt="" style={{
 						width: "100%"
 					}} />
 
-					{seats && seats.forEach(seat => console.log(seat))}
 					{seats && seats.map(seat => (
 						<Box id={seat.id} key={seat.title} title={seat.title} onClick={handleClickOpenPickSeatDialog} sx={{
 							position: "absolute",
@@ -183,8 +184,10 @@ function SeatPicker(props) {
 							background: "url(" + green + ")",
 							backgrondRepeat: "no-repeat",
 							backgroundSize: "cover",
-							cursor: "pointer"
-						}}></Box>
+							cursor: "pointer",
+							textAlign: "center",
+							display: "flex"
+						}}><Typography variant="subtitle1" gutterBottom component="p" sx={{ lineHeight: 1, fontSize: "0.9rem", margin: "auto" }}>{seat.title}</Typography></Box>
 					))}
 				</Box>
 			</Box>
