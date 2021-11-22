@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "Backend\Backend.csproj", "{3FD5C458-0902-41CA-A2F9-2B44EC6AE3FC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{28249CD9-BB37-404E-A5C1-334A9CCD71F0}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\azure_deploy.yml = .github\workflows\azure_deploy.yml
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
