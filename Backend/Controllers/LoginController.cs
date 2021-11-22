@@ -27,7 +27,7 @@ namespace DragLanSeatPicker.Controllers
 
         [FunctionName("Login")]
         public async Task<IActionResult> Login(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "login")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "login")]
             HttpRequest request,
             [CosmosDB(
                 databaseName: "draglan",
@@ -55,7 +55,7 @@ namespace DragLanSeatPicker.Controllers
 
         [FunctionName("Signup")]
         public async Task<IActionResult> Signup(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "signup")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "signup")]
             User user,
             [CosmosDB(
                 "draglan",

@@ -18,7 +18,7 @@ namespace DragLanSeatPicker.Controllers
     {
         [FunctionName("Reserve")]
         public static async Task<IActionResult> Post(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "seats")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "seats")]
             HttpRequest request,
             [CosmosDB(
                 databaseName: "draglan",
@@ -28,7 +28,7 @@ namespace DragLanSeatPicker.Controllers
             ILogger log)
         {
             await AuthUtils.Authorize(request);
-            
+
             var seatId = GetRequestBody(request).ToLower();
 
             if (string.IsNullOrWhiteSpace(seatId)) return new BadRequestResult();
@@ -52,7 +52,7 @@ namespace DragLanSeatPicker.Controllers
 
         [FunctionName("Unreserve")]
         public static async Task<IActionResult> Delete(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "seats/{id}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "seats/{id}")]
             HttpRequest request,
             [CosmosDB(
                 databaseName: "draglan",
@@ -62,7 +62,7 @@ namespace DragLanSeatPicker.Controllers
             ILogger log)
         {
             await AuthUtils.Authorize(request);
-            
+
             string seatId;
             {
                 var split = request.Path.Value.Split("/");
@@ -83,7 +83,7 @@ namespace DragLanSeatPicker.Controllers
 
         [FunctionName("GetReservedSeats")]
         public static async Task<IActionResult> Get(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "seats")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "seats")]
             HttpRequest request,
             [CosmosDB(
                 "draglan",
