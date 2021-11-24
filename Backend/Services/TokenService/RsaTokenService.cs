@@ -1,34 +1,34 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using DragLanSeatPicker.Models;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DragLanSeatPicker.Services.TokenService
 {
+    using System.IO;
+    using System.Text;
+    using Newtonsoft.Json;
+
     public class RsaTokenService : ITokenService
     {
         public string Sign(User user)
         {
-            var key = Environment.GetEnvironmentVariable("UserPrivateKey", EnvironmentVariableTarget.Process);
+            var key = Environment.GetEnvironmentVariable("UserPrivateKey");
             using var rsa = RSA.Create();
             rsa.ImportRSAPrivateKey(Convert.FromBase64String(key), out var bytesRead);
-            var securityKey = new RsaSecurityKey(rsa);
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256);
 
-            var header = new JwtHeader(credentials);
-            var payload = new JwtPayload
+            var payload = JsonConvert.SerializeObject(user);
+            var signature = rsa.SignData(Encoding.UTF8.GetBytes(payload), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+            var stream = new MemoryStream();
+            using (var writer = new BinaryWriter(stream))
             {
-                {"id", user.Id},
-                {"name", user.Name}
-            };
+                writer.Write(signature.Length);
+                writer.Write(signature);
+                writer.Write(payload);
+            }
+            var token = Convert.ToBase64String(stream.ToArray());
 
-            IdentityModelEventSource.ShowPII = true;
-            var secToken = new JwtSecurityToken(header, payload);
-            var handler = new JwtSecurityTokenHandler();
-
-            return handler.WriteToken(secToken);
+            return token;
         }
 
         public string SignAdmin(User user)
@@ -38,32 +38,26 @@ namespace DragLanSeatPicker.Services.TokenService
 
         public User Verify(string token)
         {
-            var key = Environment.GetEnvironmentVariable("UserPublicKey", EnvironmentVariableTarget.Process);
+            var key = Environment.GetEnvironmentVariable("UserPublicKey");
 
             using var rsa = RSA.Create();
-            rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(key), out var bytesRead);
+            rsa.ImportRSAPublicKey(Convert.FromBase64String(key), out var bytesRead);
 
-            var securityKey = new RsaSecurityKey(rsa);
+            var tokenBytes = Convert.FromBase64String(token);
 
-            var handler = new JwtSecurityTokenHandler();
-            IdentityModelEventSource.ShowPII = true;
-            handler.ValidateToken(token, new TokenValidationParameters
+            string payloadJson;
+            byte[] signature;
+            using (var reader = new BinaryReader(new MemoryStream(tokenBytes)))
             {
-                IssuerSigningKey = securityKey,
-                ValidateIssuerSigningKey = true,
-                ValidateLifetime = false,
-                ValidateAudience = false,
-                ValidateActor = false,
-                ValidateIssuer = false
-            }, out SecurityToken validatedToken);
+                var len = reader.ReadInt32();
+                signature = reader.ReadBytes(len);
+                payloadJson = reader.ReadString();
+            }
 
-            var jwtSecurityToken = (JwtSecurityToken) validatedToken;
-                
-            return new User
-            {
-                Id = jwtSecurityToken.Payload["id"].ToString(),
-                Name = jwtSecurityToken.Payload["name"].ToString(),
-            };
+            var verified = rsa.VerifyData(Encoding.UTF8.GetBytes(payloadJson), signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            if (!verified) return null;
+
+            return JsonConvert.DeserializeObject<User>(payloadJson);
         }
 
         public User VerifyAdmin(string token)

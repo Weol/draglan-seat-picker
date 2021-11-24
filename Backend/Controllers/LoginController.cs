@@ -16,6 +16,8 @@ using User = DragLanSeatPicker.Models.User;
 
 namespace DragLanSeatPicker.Controllers
 {
+    using System.Security.Cryptography;
+
     public class UserController
     {
         private ITokenService _tokenService;
@@ -41,16 +43,11 @@ namespace DragLanSeatPicker.Controllers
             var user = await FindUser(client, id);
             if (user is null) return new UnauthorizedResult();
 
-            try
-            {
-                return user.IsAdmin
-                    ? new OkObjectResult(_tokenService.SignAdmin(user))
-                    : new OkObjectResult(_tokenService.Sign(user));
-            }
-            catch (ValidationException e)
-            {
-                return new UnauthorizedResult();
-            }
+            var signature = user.IsAdmin
+                    ? _tokenService.SignAdmin(user)
+                    : _tokenService.Sign(user);
+
+            return new OkObjectResult(new {id = user.Id, is_admin = user.IsAdmin, name = user.Name, token = signature});
         }
 
         [FunctionName("Signup")]

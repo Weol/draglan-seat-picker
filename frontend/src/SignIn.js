@@ -9,32 +9,25 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Divider } from '@mui/material';
-import { useHistory } from "react-router-dom";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import Cookies from 'universal-cookie';
-import { Redirect } from "react-router-dom";
-import { Alert } from '@mui/material';
 import validator from 'validator'
+import {useNavigate, Navigate, Link} from "react-router-dom";
 
 const theme = createTheme();
-const cookies = new Cookies();
 
-function parseJwt(token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
+function parseJwt(jsonPayload) {
     let user = JSON.parse(jsonPayload);
-    user.token = token
-    return user
-};
-
+    return {
+        Id: user.id,
+        Name: user.name,
+        IsAdmin: user.is_admin,
+        Token: user.token
+    }
+}
 
 export default function SignIn(props) {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -44,20 +37,12 @@ export default function SignIn(props) {
         var password = data.get('password')
 
         if (email.length == 0 || password.length == 0) {
-            props.SetMessage(
-                <Alert severity="warning">
-                    Fyll inn alle feltene
-                </Alert>
-            )
+            props.SetMessage("warning", "Fyll inn alle feltene")
             return
         }
 
         if (!validator.isEmail(email)) {
-            props.SetMessage(
-                <Alert severity="warning">
-                    Venligst skriv inn en ekte e-post adresse &#128580;
-                </Alert>
-            )
+            props.SetMessage("warning", "Vennligst skriv inn en ekte e-post adresse &#128580;")
             return
         }
 
@@ -68,27 +53,19 @@ export default function SignIn(props) {
             body: hash.toString(CryptoJS.enc.Hex)
         }).then(response => {
             if (response.status == 401) {
-                props.SetMessage(
-                    <Alert severity="warning">
-                        Feil e-post eller passord
-                    </Alert>
-                )
+                props.SetMessage("warning", "Feil e-post eller passord")
             } else if (response.status != 200) {
-                props.SetMessage(
-                    <Alert severity="error">
-                        Noe gikk galt
-                    </Alert>
-                )
+                props.SetMessage("error", "Noe gikk galt, prøv på nytt")
             } else {
                 response.text().then(token => {
                     props.OnUserLoggedIn(parseJwt(token))
-                    history.push("/")
+                    navigate("/")
                 })
             }
         })
     };
 
-    if (props.User != null) return <Redirect to="/" />
+    if (props.User != null) return <Navigate to={"/"} />
 
     return (
         <ThemeProvider theme={theme}>
@@ -141,12 +118,11 @@ export default function SignIn(props) {
                         </Button>
                         <Divider />
                         <Button
+                            component={Link}
+                            to={"/signup"}
                             fullWidth
                             variant="outlined"
                             sx={{ mt: 3, mb: 2 }}
-                            onClick={() => {
-                                history.push("/signup")
-                            }}
                         >
                             Ny bruker
                         </Button>

@@ -11,15 +11,13 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import { Redirect } from "react-router-dom";
-import { Alert, AlertTitle } from '@mui/material';
-import { useHistory } from "react-router-dom";
 import validator from 'validator'
+import {Navigate, useNavigate} from "react-router-dom";
 
 const theme = createTheme();
 
 export default function SignUp(props) {
-    const history = useHistory()
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -31,30 +29,18 @@ export default function SignUp(props) {
         var email = data.get('email')
         var password = data.get('password')
 
-        if (email.length == 0 || password.length == 0 || lastName.length == 0 || firstName.length == 0) {
-            props.SetMessage(
-                <Alert severity="warning">
-                    Venligst fyll inn alle feltene
-                </Alert>
-            )
+        if (email.length === 0 || password.length === 0 || lastName.length === 0 || firstName.length === 0) {
+            props.SetMessage("warning", "Vennligst fyll inn alle feltene")
             return
         }
 
         if (!validator.isEmail(email)) {
-            props.SetMessage(
-                <Alert severity="warning">
-                    Venligst skriv inn en ekte e-post adresse &#128580;
-                </Alert>
-            )
+            props.SetMessage("warning", "Vennligst skriv inn en ekte e-post adresse &#128580;")
             return
         }
 
         if (password.length < 6) {
-            props.SetMessage(
-                <Alert severity="warning">
-                    Passordet ditt må være minst 6 tegn &#128548;
-                </Alert>
-            )
+            props.SetMessage("warning", "Passordet ditt må være minst 6 tegn &#128548;")
             return
         }
 
@@ -74,31 +60,18 @@ export default function SignUp(props) {
             },
             body: body
         }).then(response => {
-            if (response.status == 202) {
-                props.SetMessage(
-                    <Alert severity="success">
-                        <AlertTitle>Din bruker er blitt opprettet</AlertTitle>
-                        Du kan nå logge in med ditt brukernavn og passord
-                    </Alert>
-                )
-                history.push("/")
-            } else if (response.status == 409) {
-                props.SetMessage(
-                    <Alert severity="warning">
-                        Denne e-post adressen er allerede registrert
-                    </Alert>
-                )
+            if (response.status === 202) {
+                props.SetMessage("success", "Din bruker er blitt opprettet")
+                navigate("/")
+            } else if (response.status === 409) {
+                props.SetMessage("warning", "Denne e-post adressen er allerede registrert")
             } else {
-                props.SetMessage(
-                    <Alert severity="error">
-                        Noe gikk galt
-                    </Alert>
-                )
+                props.SetMessage("error", "Noe gikk galt, prøv på nytt")
             }
         })
     }
 
-    if (props.User != null) return <Redirect to="/" />
+    if (props.User != null) return <Navigate to={"/"} />
 
     return (
         <ThemeProvider theme={theme}>

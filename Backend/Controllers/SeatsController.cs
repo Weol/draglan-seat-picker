@@ -36,7 +36,9 @@ namespace DragLanSeatPicker.Controllers
             var userId = request.HttpContext.User.Claims.First(claim => claim.Type == "Id").Value;
 
             if (await FindSeatBySeatId(client, seatId) != null) return new ConflictResult();
-            if (await FindSeatByUserId(client, userId) != null) return new ConflictResult();
+
+            var existingSeat = await FindSeatByUserId(client, userId);
+            if (existingSeat != null) await DeleteSeat(client, existingSeat.Id);
 
             var seat = new Seat
             {
