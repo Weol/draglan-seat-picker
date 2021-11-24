@@ -27,6 +27,7 @@ jobs:
           npm install
           npm run build --if-present
           cp ./src/express.js ./build/express.js
+          cp ./src/start.sh ./build/start.sh
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
