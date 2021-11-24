@@ -1,11 +1,8 @@
 ﻿const express = require('express');
-const cors = require('cors');
 const app = express();
 
-app.use(cors());
-
 app.use(function(req, res, next) {
-    res.setHeader('ayy', 'lmao')
+    res.setHeader('Access-Control-Allow-Origin', '*')
     next();
 });
 
