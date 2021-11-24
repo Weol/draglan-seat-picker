@@ -55,11 +55,3 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_29E1F736BE9045CEB33250038BCB9AA4 }}
           package: .
-
-      - name: Do stuff lmao
-        run: |
-          cp -rf /home/site/wwwroot/* /opt/startup
-          cd /opt/startup
-          npm install cors
-          rm -f default-static-site.js
-          mv express.js default-static-site.js
