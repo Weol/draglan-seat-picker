@@ -4,7 +4,10 @@ const app = express();
 
 app.use(cors());
 
-sdfgjoisj49q3j+9j3+}}}}}
+app.use(function(req, res, next) {
+    res.setHeader('ayy', 'lmao')
+    next();
+});
 
 app.use(express.static('/home/site/wwwroot'));
 
