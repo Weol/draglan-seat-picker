@@ -53,4 +53,4 @@ jobs:
           app-name: 'draglan'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_29E1F736BE9045CEB33250038BCB9AA4 }}
-          package: .
+          package: ./frontend/build
