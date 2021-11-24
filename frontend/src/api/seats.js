@@ -5,7 +5,7 @@ import React from "react";
 const cookies = new Cookies();
 
 export function getSeats(seats, handler, failure) {
-    fetch(config.base_url + 'api/seats')
+    fetch(config.base_url + 'seats')
         .then(response => {
             if (response.status !== 200) {
                 console.log(response)
@@ -31,7 +31,7 @@ export function getSeats(seats, handler, failure) {
 export function reserve(seat_id, handler, failure) {
     let user = cookies.get("user", {path: "/"})
 
-    fetch(config.base_url + "api/seats", {
+    fetch(config.base_url + "seats", {
         method: "post",
         body: seat_id,
         headers: {
@@ -55,7 +55,7 @@ export function reserve(seat_id, handler, failure) {
 export function unreserve(seat_id, handler, failure) {
     let user = cookies.get("user", {path: "/"})
 
-    fetch(config.base_url + "api/seats/" + seat_id, {
+    fetch(config.base_url + "seats/" + seat_id, {
         method: "delete",
         headers: {
             'Auth': user.Token,

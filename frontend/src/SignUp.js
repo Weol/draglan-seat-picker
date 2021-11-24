@@ -54,7 +54,7 @@ export default function SignUp(props) {
         })
         console.log(body)
 
-        fetch(config.base_url + "api/signup", {
+        fetch(config.base_url + "signup", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

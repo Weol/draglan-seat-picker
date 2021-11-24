@@ -49,7 +49,7 @@ export default function SignIn(props) {
 
         const hash = sha256(email + password)
 
-        fetch(config.base_url + "api/login", {
+        fetch(config.base_url + "login", {
             method: "POST",
             body: hash.toString(CryptoJS.enc.Hex)
         }).then(response => {
