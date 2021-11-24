@@ -4,6 +4,8 @@ const app = express();
 
 app.use(cors());
 
+sdfgjoisj49q3j+9j3+}}}}}
+
 app.use(express.static('/home/site/wwwroot'));
 
 app.get('/*', function (req, res) {
