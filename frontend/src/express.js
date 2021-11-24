@@ -1,5 +1,8 @@
-﻿var express = require('express');
-var app = express();
+﻿const express = require('express');
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
 
 app.use(express.static('/home/site/wwwroot'));
 
