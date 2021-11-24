@@ -20,7 +20,7 @@ function SeatPicker(props) {
     }, [])
 
     const fetchAllSeats = () => {
-        getSeats(staticSeats, (data) => setSeats(data), (response) => props.SetMessage("error", "Noe gitt galt, prøv på nytt"))
+        getSeats(staticSeats, (data) => setSeats(data), () => props.SetMessage("error", "Noe gitt galt, prøv på nytt"))
     }
 
     const reserveSeat = (seat) => {
@@ -31,20 +31,19 @@ function SeatPicker(props) {
 
         if (seat.SelectedUser && seat.SelectedUser !== props.User.Id) {
             props.SetMessage("warning", "Sete nummer " + seat.Title + " er opptatt")
-            return
         } else if (seat.SelectedUser && seat.SelectedUser === props.User.Id) {
             setDialog({
                 Title: "Vil du gi fra deg sete nummer " + seat.Title + "?",
                 Metadata: seat.Id,
                 OnClose: () => setDialog(false),
-                OnConfirm: (seat_id) => unreserve(seat_id, () => fetchAllSeats(), (response) => props.SetMessage("error", "Noe gikk galt, prøv på nytt"))
+                OnConfirm: (seat_id) => unreserve(seat_id, () => fetchAllSeats(), () => props.SetMessage("error", "Noe gikk galt, prøv på nytt"))
             })
         } else {
             setDialog({
                 Title: "Vil du velge sete nummer " + seat.Title + "?",
                 Metadata: seat.Id,
                 OnClose: () => setDialog(false),
-                OnConfirm: (seat_id) => reserve(seat_id, () => fetchAllSeats(), (response) => props.SetMessage("error", "Noe gikk galt, prøv på nytt"))
+                OnConfirm: (seat_id) => reserve(seat_id, () => fetchAllSeats(), () => props.SetMessage("error", "Noe gikk galt, prøv på nytt"))
             })
         }
     }

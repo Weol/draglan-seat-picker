@@ -10,7 +10,6 @@ import Toolbar from '@mui/material/Toolbar';
 import AppBar from '@mui/material/AppBar';
 import {Button, Typography} from '@mui/material'
 import UserProfileButton from "./components/UserProfileButton";
-import Box from "@mui/material/Box";
 
 const cookies = new Cookies();
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,6 +13,7 @@ import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import validator from 'validator'
 import {useNavigate, Navigate, Link} from "react-router-dom";
+import config from "./api/config"
 
 const theme = createTheme();
 
@@ -36,7 +37,7 @@ export default function SignIn(props) {
         var email = data.get('email')
         var password = data.get('password')
 
-        if (email.length == 0 || password.length == 0) {
+        if (email.length === 0 || password.length === 0) {
             props.SetMessage("warning", "Fyll inn alle feltene")
             return
         }
@@ -48,13 +49,13 @@ export default function SignIn(props) {
 
         const hash = sha256(email + password)
 
-        fetch("http://localhost:3000/api/login", {
+        fetch(config.base_url + "api/login", {
             method: "POST",
             body: hash.toString(CryptoJS.enc.Hex)
         }).then(response => {
-            if (response.status == 401) {
+            if (response.status === 401) {
                 props.SetMessage("warning", "Feil e-post eller passord")
-            } else if (response.status != 200) {
+            } else if (response.status !== 200) {
                 props.SetMessage("error", "Noe gikk galt, prøv på nytt")
             } else {
                 response.text().then(token => {

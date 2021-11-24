@@ -1,4 +1,4 @@
 ﻿
 export default {
-    base_url: "http://localhost:3000/"
+    base_url: "https://seatpicker-backend.azurewebsites.net/"
 }

@@ -13,6 +13,7 @@ import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import validator from 'validator'
 import {Navigate, useNavigate} from "react-router-dom";
+import config from "./api/config"
 
 const theme = createTheme();
 
@@ -53,7 +54,7 @@ export default function SignUp(props) {
         })
         console.log(body)
 
-        fetch("http://localhost:3000/api/signup", {
+        fetch(config.base_url + "api/signup", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
