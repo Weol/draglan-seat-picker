@@ -58,6 +58,8 @@ jobs:
 
       - name: Do stuff lmao
         run: |
-          cp -rf ./site/wwwroot /opt/startup
+          cp -rf /home/site/wwwroot/* /opt/startup
           cd /opt/startup
           npm install cors
+          rm -f default-static-site.js
+          mv express.js default-static-site.js
