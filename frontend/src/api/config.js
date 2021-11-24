@@ -1,4 +1,4 @@
 ﻿
 export default {
-    base_url: "https://seatpicker-backend.azurewebsites.net/"
+    base_url: "https://seatpicker-backend.azurewebsites.net/api/"
 }
