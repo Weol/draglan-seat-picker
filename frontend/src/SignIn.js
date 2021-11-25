@@ -34,7 +34,7 @@ export default function SignIn(props) {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
 
-        var email = data.get('email')
+        var email = data.get('email').toLowerCase()
         var password = data.get('password')
 
         if (email.length === 0 || password.length === 0) {

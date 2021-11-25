@@ -27,7 +27,7 @@ export default function SignUp(props) {
 
         var firstName = data.get('firstName')
         var lastName = data.get('lastName')
-        var email = data.get('email')
+        var email = data.get('email').toLowerCase()
         var password = data.get('password')
 
         if (email.length === 0 || password.length === 0 || lastName.length === 0 || firstName.length === 0) {
