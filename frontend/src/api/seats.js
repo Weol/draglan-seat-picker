@@ -1,6 +1,6 @@
-﻿import Cookies from "universal-cookie";
+﻿import React from "react";
+import Cookies from "universal-cookie";
 import config from "./config"
-import React from "react";
 
 const cookies = new Cookies();
 
@@ -8,7 +8,6 @@ export function getSeats(seats, handler, failure) {
     fetch(config.base_url + 'seats')
         .then(response => {
             if (response.status !== 200) {
-                console.log(response)
                 throw "Http response " + response.status
             }
             return response.json()
@@ -40,7 +39,6 @@ export function reserve(seat_id, handler, failure) {
         },
     }).then(response => {
         if (response.status !== 202) {
-            console.log(response)
             throw "Http response " + response.status
         }
         return response
@@ -62,7 +60,6 @@ export function unreserve(seat_id, handler, failure) {
         },
     }).then(response => {
         if (response.status !== 200) {
-            console.log(response)
             throw "Http response " + response.status
         }
         return response

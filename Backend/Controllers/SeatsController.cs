@@ -20,10 +20,7 @@ namespace DragLanSeatPicker.Controllers
         public static async Task<IActionResult> Post(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "seats")]
             HttpRequest request,
-            [CosmosDB(
-                databaseName: "draglan",
-                collectionName: "seats",
-                ConnectionStringSetting = "CosmosDBConnection")]
+            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
             DocumentClient client,
             ILogger log)
         {
@@ -35,10 +32,24 @@ namespace DragLanSeatPicker.Controllers
 
             var userId = request.HttpContext.User.Claims.First(claim => claim.Type == "Id").Value;
 
-            if (await FindSeatBySeatId(client, seatId) != null) return new ConflictResult();
+            {
+                var existingSeat = await FindSeatBySeatId(client, seatId);
+                if (existingSeat != null && existingSeat.UserId == userId)
+                {
+                    return new AcceptedResult();
+                }
 
-            var existingSeat = await FindSeatByUserId(client, userId);
-            if (existingSeat != null) await DeleteSeat(client, existingSeat.Id);
+                if (existingSeat != null)
+                {
+                    return new ConflictResult();
+                }
+
+            }
+
+            {
+                var existingSeat = await FindSeatByUserId(client, userId);
+                if (existingSeat != null) await DeleteSeat(client, existingSeat.Id);
+            }
 
             var seat = new Seat
             {
@@ -56,10 +67,7 @@ namespace DragLanSeatPicker.Controllers
         public static async Task<IActionResult> Delete(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "seats/{id}")]
             HttpRequest request,
-            [CosmosDB(
-                databaseName: "draglan",
-                collectionName: "seats",
-                ConnectionStringSetting = "CosmosDBConnection")]
+            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
             DocumentClient client,
             ILogger log)
         {
@@ -87,10 +95,7 @@ namespace DragLanSeatPicker.Controllers
         public static async Task<IActionResult> Get(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "seats")]
             HttpRequest request,
-            [CosmosDB(
-                "draglan",
-                "seats",
-                ConnectionStringSetting = "CosmosDBConnection")]
+            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
             DocumentClient client,
             ILogger log)
         {

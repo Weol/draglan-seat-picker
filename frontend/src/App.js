@@ -1,15 +1,12 @@
 import React, {useState} from 'react'
-import {BrowserRouter, Routes, Route, Link} from "react-router-dom";
+import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
 import Cookies from 'universal-cookie';
-import './App.css';
-import SignIn from './SignIn.js';
-import SignUp from './SignUp.js';
-import {Alert, AlertTitle, Snackbar} from '@mui/material';
-import SeatPicker from './SeatPicker.js';
-import Toolbar from '@mui/material/Toolbar';
-import AppBar from '@mui/material/AppBar';
-import {Button, Typography} from '@mui/material'
+import SignIn from './signin';
+import SignUp from './signup.js';
+import SeatPicker from './seatpicker.js';
+import {Alert, AlertTitle, AppBar, Button, Snackbar, Toolbar, Typography} from '@mui/material';
 import UserProfileButton from "./components/UserProfileButton";
+import {logout} from "./api/users"
 
 const cookies = new Cookies();
 
@@ -21,19 +18,14 @@ function App() {
         setMessage({Type: type, Message: message})
     }
 
-    const logout = () => {
-        cookies.remove("user")
+    const onLogout = () => {
+        logout()
         setUser(null)
-    }
-
-    const onUserLoggedIn = (user) => {
-        cookies.set("user", user, {path: "/"})
-        setUser(user)
     }
 
     return (
         <BrowserRouter>
-            <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} autoHideDuration={6000}
+            <Snackbar anchorOrigin={{vertical: "top", horizontal: "center"}} autoHideDuration={5000}
                       open={message != null} onClose={() => setMessage(null)}>
                 {message && <Alert severity={message.Type}>
                     <AlertTitle>{message.Message}</AlertTitle>
@@ -46,17 +38,18 @@ function App() {
                                 DragLan
                             </Typography>
                         </Link>
-                    {user != null ? <UserProfileButton Logout={logout} User={user}/> :
+                    {user != null ? <UserProfileButton Logout={onLogout} User={user}/> :
                         <Button component={Link} to="/signin" color="inherit">Login</Button>}
                 </Toolbar>
             </AppBar>
             <Routes>
                 <Route path="/signin"
-                       element={<SignIn SetMessage={doSetMessage} User={user} OnUserLoggedIn={onUserLoggedIn}/>}/>
+                       element={<SignIn SetMessage={doSetMessage} User={user} OnUserLoggedIn={setUser}/>}/>
                 <Route path="/signup" element={<SignUp SetMessage={doSetMessage} User={user}/>}/>
                 <Route path="/" element={<SeatPicker User={user} SetMessage={doSetMessage}/>}/>
             </Routes>
-        </BrowserRouter>)
+        </BrowserRouter>
+    )
 }
 
 export default App;
