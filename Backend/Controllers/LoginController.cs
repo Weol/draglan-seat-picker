@@ -30,7 +30,7 @@ namespace DragLanSeatPicker.Controllers
         [FunctionName("Login")]
         public async Task<IActionResult> Login(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "login")]
-            HttpRequest request,
+            User requestUser,
             [CosmosDB(
                 databaseName: "draglan",
                 collectionName: "users",
@@ -38,10 +38,8 @@ namespace DragLanSeatPicker.Controllers
             DocumentClient client,
             ILogger log)
         {
-            var id = GetRequestBody(request);
-
-            var user = await FindUser(client, id);
-            if (user is null) return new UnauthorizedResult();
+            var user = await FindUser(client, requestUser.Id);
+            if (user is null || user.Password != requestUser.Password) return new UnauthorizedResult();
 
             var signature = user.IsAdmin
                     ? _tokenService.SignAdmin(user)
@@ -61,7 +59,7 @@ namespace DragLanSeatPicker.Controllers
             DocumentClient client,
             ILogger log)
         {
-            if (string.IsNullOrWhiteSpace(user.Id) || string.IsNullOrWhiteSpace(user.Name))
+            if (string.IsNullOrWhiteSpace(user.Id) || string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Password))
                 return new BadRequestResult();
 
             if (user.IsAdmin) return new UnauthorizedResult();
@@ -72,7 +70,6 @@ namespace DragLanSeatPicker.Controllers
 
             return new AcceptedResult();
         }
-
 
         private static async Task CreateUser(IDocumentClient client, User user)
         {

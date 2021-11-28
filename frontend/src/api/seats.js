@@ -8,7 +8,7 @@ export function getSeats(seats, handler, failure) {
     fetch(config.base_url + 'seats')
         .then(response => {
             if (response.status !== 200) {
-                throw "Http response " + response.status
+                throw response
             }
             return response.json()
         })
@@ -39,7 +39,7 @@ export function reserve(seat_id, handler, failure) {
         },
     }).then(response => {
         if (response.status !== 202) {
-            throw "Http response " + response.status
+            throw response
         }
         return response
     }).then(response=> {
@@ -60,7 +60,7 @@ export function unreserve(seat_id, handler, failure) {
         },
     }).then(response => {
         if (response.status !== 200) {
-            throw "Http response " + response.status
+            throw response
         }
         return response
     }).then(response => {

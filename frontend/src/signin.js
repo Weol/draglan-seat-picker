@@ -35,8 +35,8 @@ export default function SignIn(props) {
         signin(email, password, user => {
             props.OnUserLoggedIn(user)
             navigate("/")
-        }, status => {
-            switch (status) {
+        }, response => {
+            switch (response.status) {
                 case 401:
                     props.SetMessage("warning", "Feil e-post eller passord");
                     break;

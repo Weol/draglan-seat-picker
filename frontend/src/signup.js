@@ -34,12 +34,12 @@ export default function SignUp(props) {
         }
 
         if (!validator.isEmail(email)) {
-            props.SetMessage("warning", "Vennligst skriv inn en ekte e-post adresse &#128580;")
+            props.SetMessage("warning", "Vennligst skriv inn en ekte e-post adresse")
             return
         }
 
         if (password.length < 6) {
-            props.SetMessage("warning", "Passordet ditt må være minst 6 tegn &#128548;")
+            props.SetMessage("warning", "Passordet ditt må være minst 6 tegn")
             return
         }
 
@@ -48,8 +48,8 @@ export default function SignUp(props) {
         signup(email, password, name, () => {
             props.SetMessage("success", "Din bruker er blitt opprettet")
             navigate("/signin")
-        }, status => {
-            switch (status) {
+        }, response => {
+            switch (response.status) {
                 case 409:
                     props.SetMessage("warning", "Denne e-post adressen er allerede registrert");
                     break;

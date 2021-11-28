@@ -7,14 +7,20 @@ import CryptoJS from "crypto-js";
 const cookies = new Cookies();
 
 export function signin(email, password, handler, failure) {
-    const hash = sha256(email.toLowerCase() + password)
+    const emailHash = sha256(email.toLowerCase())
+    const passwordHash = sha256(password)
+
+    const body = JSON.stringify({
+        id: emailHash.toString(CryptoJS.enc.Hex),
+        password: passwordHash.toString(CryptoJS.enc.Hex)
+    })
 
     fetch(config.base_url + "login", {
         method: "POST",
-        body: hash.toString(CryptoJS.enc.Hex)
+        body: body
     }).then(response => {
         if (response.status !== 200) {
-            throw "Http response " + response.status
+            throw response
         }
         return response.json()
     }).then(raw => {
@@ -35,10 +41,12 @@ export function signin(email, password, handler, failure) {
 }
 
 export function signup(email, password, name, handler, failure) {
-    const hash = sha256(email.toLowerCase() + password)
+    const emailHash = sha256(email.toLowerCase())
+    const passwordHash = sha256(password)
 
     const body = JSON.stringify({
-        id: hash.toString(CryptoJS.enc.Hex),
+        id: emailHash.toString(CryptoJS.enc.Hex),
+        password: passwordHash.toString(CryptoJS.enc.Hex),
         name: name
     })
 
@@ -50,7 +58,7 @@ export function signup(email, password, name, handler, failure) {
         body: body
     }).then(response => {
         if (response.status !== 202) {
-            throw "Http response " + response.status
+            throw response
         }
         handler && handler()
     }).catch((error) => {
