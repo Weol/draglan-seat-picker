@@ -28,6 +28,8 @@ namespace DragLanSeatPicker.Controllers
             var seatId = GetRequestBody(request)
                 .ToLower();
 
+            if (!Guid.TryParse(seatId, out var guid)) return new BadRequestResult();
+
             if (string.IsNullOrWhiteSpace(seatId)) return new BadRequestResult();
 
             var userId = request.HttpContext.User.Claims.First(claim => claim.Type == "Id")
