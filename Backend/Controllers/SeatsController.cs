@@ -14,23 +14,24 @@ using Microsoft.Extensions.Logging;
 
 namespace DragLanSeatPicker.Controllers
 {
+    using System;
+    using Microsoft.Azure.WebJobs.Extensions.WebPubSub;
+    using Microsoft.Azure.WebPubSub.Common;
+
     public static class SeatsController
     {
         [FunctionName("Reserve")]
-        public static async Task<IActionResult> Post(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "seats")]
-            HttpRequest request,
-            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
-            ILogger log)
+        public static async Task<IActionResult> Post([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "seats")] HttpRequest request, [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client, [WebPubSub(Hub = "seats", Connection = "WebPubSubConnectionString")] IAsyncCollector<WebPubSubAction> actions, ILogger log)
         {
             await AuthUtils.Authorize(request);
 
-            var seatId = GetRequestBody(request).ToLower();
+            var seatId = GetRequestBody(request)
+                .ToLower();
 
             if (string.IsNullOrWhiteSpace(seatId)) return new BadRequestResult();
 
-            var userId = request.HttpContext.User.Claims.First(claim => claim.Type == "Id").Value;
+            var userId = request.HttpContext.User.Claims.First(claim => claim.Type == "Id")
+                .Value;
 
             {
                 var existingSeat = await FindSeatBySeatId(client, seatId);
@@ -43,33 +44,34 @@ namespace DragLanSeatPicker.Controllers
                 {
                     return new ConflictResult();
                 }
-
             }
 
             {
                 var existingSeat = await FindSeatByUserId(client, userId);
-                if (existingSeat != null) await DeleteSeat(client, existingSeat.Id);
+                if (existingSeat != null)
+                {
+                    await DeleteSeat(client, existingSeat.Id);
+                    await actions.AddAsync(new SendToAllAction {Data = BinaryData.FromObjectAsJson(new {Type = "unreserved", Payload = existingSeat.Id})});
+                }
             }
 
             var seat = new Seat
             {
                 Id = seatId,
-                Name = request.HttpContext.User.Claims.First(claim => claim.Type == "Name").Value,
+                Name = request.HttpContext.User.Claims.First(claim => claim.Type == "Name")
+                    .Value,
                 UserId = userId,
             };
 
             await CreateSeat(client, seat);
 
+            await actions.AddAsync(new SendToAllAction {Data = BinaryData.FromObjectAsJson(new {Type = "reserved", Payload = seat}), DataType = WebPubSubDataType.Json});
+
             return new AcceptedResult();
         }
 
         [FunctionName("Unreserve")]
-        public static async Task<IActionResult> Delete(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "seats/{id}")]
-            HttpRequest request,
-            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
-            ILogger log)
+        public static async Task<IActionResult> Delete([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "seats/{id}")] HttpRequest request, [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client, [WebPubSub(Hub = "seats", Connection = "WebPubSubConnectionString")] IAsyncCollector<WebPubSubAction> actions, ILogger log)
         {
             await AuthUtils.Authorize(request);
 
@@ -81,23 +83,21 @@ namespace DragLanSeatPicker.Controllers
 
             if (string.IsNullOrWhiteSpace(seatId)) return new BadRequestResult();
 
-            var userId = request.HttpContext.User.Claims.First(claim => claim.Type == "Id").Value;
+            var userId = request.HttpContext.User.Claims.First(claim => claim.Type == "Id")
+                .Value;
 
             if (await FindSeatBySeatId(client, seatId) == null) return new NotFoundResult();
             if (await FindSeatByUserId(client, userId) == null) return new UnauthorizedResult();
 
             await DeleteSeat(client, seatId);
 
+            await actions.AddAsync(new SendToAllAction {Data = BinaryData.FromObjectAsJson(new {Type = "unreserved", Payload = seatId})});
+
             return new OkResult();
         }
 
         [FunctionName("GetReservedSeats")]
-        public static async Task<IActionResult> Get(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "seats")]
-            HttpRequest request,
-            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
-            DocumentClient client,
-            ILogger log)
+        public static async Task<IActionResult> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "seats")] HttpRequest request, [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client, ILogger log)
         {
             var collectionUri = UriFactory.CreateDocumentCollectionUri("draglan", "seats");
             var query = client.CreateDocumentQuery(collectionUri)
@@ -115,8 +115,7 @@ namespace DragLanSeatPicker.Controllers
         private static async Task<Seat> FindSeatByUserId(DocumentClient client, string userId)
         {
             var collectionUri = UriFactory.CreateDocumentCollectionUri("draglan", "seats");
-            var query = client
-                .CreateDocumentQuery<Seat>(collectionUri, new FeedOptions() { EnableCrossPartitionQuery = true })
+            var query = client.CreateDocumentQuery<Seat>(collectionUri, new FeedOptions() {EnableCrossPartitionQuery = true})
                 .Where(x => x.UserId == userId)
                 .AsDocumentQuery();
 
@@ -134,7 +133,7 @@ namespace DragLanSeatPicker.Controllers
         private static async Task DeleteSeat(IDocumentClient client, string seatId)
         {
             var collectionUri = UriFactory.CreateDocumentUri("draglan", "seats", seatId);
-            await client.DeleteDocumentAsync(collectionUri, new RequestOptions() { PartitionKey = new PartitionKey(seatId) });
+            await client.DeleteDocumentAsync(collectionUri, new RequestOptions() {PartitionKey = new PartitionKey(seatId)});
         }
 
         private static async Task CreateSeat(IDocumentClient client, Seat seat)

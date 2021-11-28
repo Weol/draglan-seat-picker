@@ -1,4 +1,4 @@
-﻿import React, {useEffect, useState} from 'react';
+﻿import React, {useEffect, useRef, useState} from 'react';
 import Box from '@mui/material/Box';
 import background from "./media/background.svg"
 import {getSeats, reserve, unreserve} from "./api/seats"
@@ -8,6 +8,7 @@ import ConfirmDialog from "./components/ConfirmDialog";
 import green from "./media/green.svg";
 import red from "./media/red.svg";
 import blue from "./media/blue.svg";
+import config from "./api/config";
 
 const staticSeats = () => createSeats(29.9, 36.9, 8.72, 2.5)
 
@@ -15,6 +16,8 @@ function SeatPicker(props) {
     const [seats, setSeats] = useState([])
     const [dialog, setDialog] = useState(false)
     const [alreadySelected, setAlreadySelected] = useState(false)
+
+    const wsRef = useRef(null)
 
     useEffect(() => {
         fetchAllSeats()
@@ -24,7 +27,6 @@ function SeatPicker(props) {
         getSeats(staticSeats, (data) => {
             setSeats(data)
             setAlreadySelected(props.User && data.find(x => x.SelectedUser === props.User.Id))
-
         }, () => props.SetMessage("error", "Noe gitt galt, prøv på nytt"))
     }
 
@@ -82,6 +84,44 @@ function SeatPicker(props) {
         }
         return red
     }
+
+    const onSeatUnreserved = (seatId) => {
+        let existingSeat = seats.find(x => x.Id === seatId)
+        if (existingSeat != null) {
+            existingSeat.SelectedUser = null
+            existingSeat.SelectedName = null
+
+            setSeats([... seats])
+        }
+    }
+
+    const onSeatReserved = (seat) => {
+        let existingSeat = seats.find(x => x.Id === seat.Id)
+        if (existingSeat != null) {
+            existingSeat.SelectedUser = seat.UserId
+            existingSeat.SelectedName = seat.Name
+
+            setSeats([... seats])
+        }
+    }
+
+    useEffect(async () => {
+        if (!wsRef.current) {
+            let response = await fetch(config.base_url + "pubsub?userid=1")
+            let data = await response.json()
+
+            wsRef.current = new WebSocket(data.url)
+        }
+
+        wsRef.current.onmessage = event => {
+            let message = JSON.parse(event.data)
+            if (message.Type === "unreserved") {
+                onSeatUnreserved(message.Payload)
+            } else if (message.Type === "reserved") {
+                onSeatReserved(message.Payload)
+            }
+        };
+    })
 
     return (
         <Box sx={{flexGrow: 1}}>
