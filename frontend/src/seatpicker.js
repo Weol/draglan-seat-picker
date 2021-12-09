@@ -10,7 +10,7 @@ import red from "./media/red.svg";
 import blue from "./media/blue.svg";
 import config from "./api/config";
 
-const staticSeats = () => createSeats(29.9, 36.9, 8.72, 2.5)
+const staticSeats = () => createSeats(29.9, 36.9, 8.72 + (8.72*2/5), 2.51)
 
 function SeatPicker(props) {
     const [seats, setSeats] = useState([])

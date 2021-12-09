@@ -5,6 +5,7 @@ import config from "./config"
 const cookies = new Cookies();
 
 export function getSeats(seats, handler, failure) {
+    console.log([... seats()])
     fetch(config.base_url + 'seats')
         .then(response => {
             if (response.status !== 200) {
@@ -14,7 +15,7 @@ export function getSeats(seats, handler, failure) {
         })
         .then(data => data.reduce((list, obj) => {
             let value = list.find(x => x.Id === obj.id)
-            if (value.Id === obj.id) {
+            if (value && value.Id === obj.id) {
                 value.SelectedUser = obj.user
                 value.SelectedName = obj.name
             }
