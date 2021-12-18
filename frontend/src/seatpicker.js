@@ -9,6 +9,7 @@ import green from "./media/green.svg";
 import red from "./media/red.svg";
 import blue from "./media/blue.svg";
 import besj from "./media/besj.svg";
+import config from "./api/config"
 
 const staticSeats = () => createSeats(29.9, 36.9, 8.72 + (8.72 * 2 / 5), 2.51)
 
