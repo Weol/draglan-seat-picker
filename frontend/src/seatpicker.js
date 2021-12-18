@@ -10,7 +10,7 @@ import red from "./media/red.svg";
 import blue from "./media/blue.svg";
 import besj from "./media/besj.svg";
 
-const staticSeats = () => createSeats(29.9, 36.9, 8.72 + (8.72*2/5), 2.51)
+const staticSeats = () => createSeats(29.9, 36.9, 8.72 + (8.72 * 2 / 5), 2.51)
 
 function SeatPicker(props) {
     const [seats, setSeats] = useState([])
@@ -61,18 +61,18 @@ function SeatPicker(props) {
                 }, () => props.SetMessage("error", "Noe gikk galt, prøv på nytt"))
             })
         } else {
-           reserve(seat.Id, () => {
-               props.SetMessage("success", "Plass reservert")
-               fetchAllSeats()
-           }, (status) => {
-               switch (status) {
-                   case 409:
-                       props.SetMessage("warning", "Denne plassen var opptatt");
-                       break;
-                   default:
-                       props.SetMessage("warning", "Noe gikk galt, vennligst prøv igjen")
-               }
-           })
+            reserve(seat.Id, () => {
+                props.SetMessage("success", "Plass reservert")
+                fetchAllSeats()
+            }, (status) => {
+                switch (status) {
+                    case 409:
+                        props.SetMessage("warning", "Denne plassen var opptatt");
+                        break;
+                    default:
+                        props.SetMessage("warning", "Noe gikk galt, vennligst prøv igjen")
+                }
+            })
         }
     }
 
@@ -95,7 +95,7 @@ function SeatPicker(props) {
             existingSeat.SelectedUser = null
             existingSeat.SelectedName = null
 
-            setSeats([... seats])
+            setSeats([...seats])
         }
     }
 
@@ -105,26 +105,26 @@ function SeatPicker(props) {
             existingSeat.SelectedUser = seat.UserId
             existingSeat.SelectedName = seat.Name
 
-            setSeats([... seats])
+            setSeats([...seats])
         }
     }
 
     useEffect(async () => {
-        // if (!wsRef.current) {
-        //     let response = await fetch(config.base_url + "pubsub?userid=2")
-        //     let data = await response.json()
-        //
-        //     wsRef.current = new WebSocket(data.url)
-        // }
-        //
-        // wsRef.current.onmessage = event => {
-        //     let message = JSON.parse(event.data)
-        //     if (message.Type === "unreserved") {
-        //         onSeatUnreserved(message.Payload)
-        //     } else if (message.Type === "reserved") {
-        //         onSeatReserved(message.Payload)
-        //     }
-        // };
+        if (!wsRef.current) {
+            let response = await fetch(config.base_url + "pubsub?userid=2")
+            let data = await response.json()
+
+            wsRef.current = new WebSocket(data.url)
+        }
+
+        wsRef.current.onmessage = event => {
+            let message = JSON.parse(event.data)
+            if (message.Type === "unreserved") {
+                onSeatUnreserved(message.Payload)
+            } else if (message.Type === "reserved") {
+                onSeatReserved(message.Payload)
+            }
+        };
     })
 
     return (
