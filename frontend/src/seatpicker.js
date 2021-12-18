@@ -77,12 +77,14 @@ function SeatPicker(props) {
     }
 
     const getColor = (seat) => {
-        if (seat.TTL) {
-            return besj
-        } else if (props.User && seat.SelectedUser === props.User.Id) {
+        if (props.User && seat.SelectedUser === props.User.Id) {
             return blue
         } else if (!seat.SelectedUser) {
-            return green
+            if (seat.TTL) {
+                return besj
+            } else {
+                return green
+            }
         }
         return red
     }
