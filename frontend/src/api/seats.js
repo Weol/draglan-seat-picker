@@ -5,7 +5,6 @@ import config from "./config"
 const cookies = new Cookies();
 
 export function getSeats(seats, handler, failure) {
-    console.log([... seats()])
     fetch(config.base_url + 'seats')
         .then(response => {
             if (response.status !== 200) {

@@ -1,4 +1,3 @@
-
 const createRow = (reference, y, n, title) => {
     let row = []
     for (var i = 0; i < n; i++) {
@@ -13,8 +12,7 @@ const createRow = (reference, y, n, title) => {
     return row
 }
 
-export default function createSeats(top, left, width, height)
-{
+export default function createSeats(top, left, width, height) {
     const reference = {
         Top: top,
         Left: left,
@@ -25,12 +23,38 @@ export default function createSeats(top, left, width, height)
     const rows = [
         createRow(reference, 0, 5, 1),
         createRow(reference, 1, 5, 6),
-        createRow(reference, 4, 5, 11),
-        createRow(reference, 5, 5, 16),
+        createRow(reference, 5, 5, 11),
+        createRow(reference, 6, 5, 16),
         createRow(reference, 8, 5, 21),
         createRow(reference, 11, 5, 26),
-        createRow(reference, 12, 5, 31)
+        createRow(reference, 12, 5, 31),
     ]
+
+    const firstExtra = {
+        Title: 36,
+        Top: 69.452,
+        Left: 35.1,
+        Width: width,
+        Height: height,
+        TTL: 30
+    }
+
+    const extra = [
+        firstExtra,
+    ]
+
+    for (var i = 0; i < 4; i++) {
+        extra.push(
+            {
+                Title: (firstExtra.Title + i + 1),
+                Top: firstExtra.Top + (firstExtra.Height + 0.8) * (i + 1),
+                Left: firstExtra.Left,
+                Width: firstExtra.Width,
+                Height: firstExtra.Height,
+                TTL: firstExtra.TTL
+            },
+        )
+    }
 
     const staticSeats = new Map([
         ["2052ccf8-3d0f-43e5-b595-6d770956d72c", rows[0][0]],
@@ -68,6 +92,10 @@ export default function createSeats(top, left, width, height)
         ["a4c5d446-9fa3-44b8-ae97-ed699be50209", rows[6][2]],
         ["e6b2f060-7aa3-4fd9-b57a-dd9b648e0201", rows[6][3]],
         ["15a1fbd6-e93e-46d1-96a5-8e89d927429c", rows[6][4]],
+        ["322bf00c-dcf0-473d-bd8b-1e3bf79b4e99", extra[0]],
+        ["2be5d23d-9edf-4e06-9409-0c56a76f1dfc", extra[1]],
+        ["39158bb4-2ed9-44cc-90b7-3adac25a6bdf", extra[2]],
+        ["e1fd7912-3aba-47d6-80b3-288222b7d6eb", extra[3]],
     ])
 
     staticSeats.forEach((value, key) => {

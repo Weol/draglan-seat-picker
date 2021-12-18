@@ -8,7 +8,7 @@ import ConfirmDialog from "./components/ConfirmDialog";
 import green from "./media/green.svg";
 import red from "./media/red.svg";
 import blue from "./media/blue.svg";
-import config from "./api/config";
+import besj from "./media/besj.svg";
 
 const staticSeats = () => createSeats(29.9, 36.9, 8.72 + (8.72*2/5), 2.51)
 
@@ -77,7 +77,9 @@ function SeatPicker(props) {
     }
 
     const getColor = (seat) => {
-        if (props.User && seat.SelectedUser === props.User.Id) {
+        if (seat.TTL) {
+            return besj
+        } else if (props.User && seat.SelectedUser === props.User.Id) {
             return blue
         } else if (!seat.SelectedUser) {
             return green
@@ -106,21 +108,21 @@ function SeatPicker(props) {
     }
 
     useEffect(async () => {
-        if (!wsRef.current) {
-            let response = await fetch(config.base_url + "pubsub?userid=1")
-            let data = await response.json()
-
-            wsRef.current = new WebSocket(data.url)
-        }
-
-        wsRef.current.onmessage = event => {
-            let message = JSON.parse(event.data)
-            if (message.Type === "unreserved") {
-                onSeatUnreserved(message.Payload)
-            } else if (message.Type === "reserved") {
-                onSeatReserved(message.Payload)
-            }
-        };
+        // if (!wsRef.current) {
+        //     let response = await fetch(config.base_url + "pubsub?userid=2")
+        //     let data = await response.json()
+        //
+        //     wsRef.current = new WebSocket(data.url)
+        // }
+        //
+        // wsRef.current.onmessage = event => {
+        //     let message = JSON.parse(event.data)
+        //     if (message.Type === "unreserved") {
+        //         onSeatUnreserved(message.Payload)
+        //     } else if (message.Type === "reserved") {
+        //         onSeatReserved(message.Payload)
+        //     }
+        // };
     })
 
     return (
