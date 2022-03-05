@@ -23,38 +23,13 @@ export default function createSeats(top, left, width, height) {
     const rows = [
         createRow(reference, 0, 5, 1),
         createRow(reference, 1, 5, 6),
-        createRow(reference, 5, 5, 11),
-        createRow(reference, 6, 5, 16),
+        createRow(reference, 4, 5, 11),
+        createRow(reference, 5, 5, 16),
         createRow(reference, 8, 5, 21),
-        createRow(reference, 11, 5, 26),
+        createRow(reference, 9, 5, 26),
         createRow(reference, 12, 5, 31),
+        createRow(reference, 13, 5, 36),
     ]
-
-    const firstExtra = {
-        Title: 36,
-        Top: 69.452,
-        Left: 35.1,
-        Width: width,
-        Height: height,
-        TTL: 30
-    }
-
-    const extra = [
-        firstExtra,
-    ]
-
-    for (var i = 0; i < 4; i++) {
-        extra.push(
-            {
-                Title: (firstExtra.Title + i + 1),
-                Top: firstExtra.Top + (firstExtra.Height + 0.8) * (i + 1),
-                Left: firstExtra.Left,
-                Width: firstExtra.Width,
-                Height: firstExtra.Height,
-                TTL: firstExtra.TTL
-            },
-        )
-    }
 
     const staticSeats = new Map([
         ["2052ccf8-3d0f-43e5-b595-6d770956d72c", rows[0][0]],
@@ -77,11 +52,11 @@ export default function createSeats(top, left, width, height) {
         ["cdc49386-eb8c-4da2-8096-a742baa92dd5", rows[3][2]],
         ["3a8e474a-aa8d-43de-bd74-7169c56b1c89", rows[3][3]],
         ["9cbdba06-3c32-4fbe-bb4f-0348c2808b46", rows[3][4]],
-        // ["349f04f3-31c6-41c9-8e5c-ecf787272344", rows[4][0]],
-        // ["7c7f118b-adab-4c8f-abaf-3e6404e02308", rows[4][1]],
-        // ["cc01dfe8-ad67-4863-87f3-426d8fc1eabd", rows[4][2]],
-        // ["be265bb6-966c-45c3-897b-6adcf38705fd", rows[4][3]],
-        // ["1d6b2a97-8413-48b2-9892-ef6e2f54f722", rows[4][4]],
+        ["349f04f3-31c6-41c9-8e5c-ecf787272344", rows[4][0]],
+        ["7c7f118b-adab-4c8f-abaf-3e6404e02308", rows[4][1]],
+        ["cc01dfe8-ad67-4863-87f3-426d8fc1eabd", rows[4][2]],
+        ["be265bb6-966c-45c3-897b-6adcf38705fd", rows[4][3]],
+        ["1d6b2a97-8413-48b2-9892-ef6e2f54f722", rows[4][4]],
         ["5b08e098-bdd8-43e2-bb86-e94bd749431c", rows[5][0]],
         ["a7ac7c8c-1fe7-45f6-a9c0-a9a4ffea5857", rows[5][1]],
         ["e0bc0f28-7995-43cb-9b6f-5b500bb7c43d", rows[5][2]],
@@ -92,10 +67,11 @@ export default function createSeats(top, left, width, height) {
         ["a4c5d446-9fa3-44b8-ae97-ed699be50209", rows[6][2]],
         ["e6b2f060-7aa3-4fd9-b57a-dd9b648e0201", rows[6][3]],
         ["15a1fbd6-e93e-46d1-96a5-8e89d927429c", rows[6][4]],
-        ["322bf00c-dcf0-473d-bd8b-1e3bf79b4e99", extra[0]],
-        ["2be5d23d-9edf-4e06-9409-0c56a76f1dfc", extra[1]],
-        ["39158bb4-2ed9-44cc-90b7-3adac25a6bdf", extra[2]],
-        ["e1fd7912-3aba-47d6-80b3-288222b7d6eb", extra[3]],
+        ["6afc155a-f2b8-4943-91e1-4dec0b83cfa0", rows[7][0]],
+        ["22606245-41c3-407d-b341-ec7f4d07f279", rows[7][1]],
+        ["08d3d22a-87ab-45c5-86f5-6a8aaf1ebfb1", rows[7][2]],
+        ["728b21e9-cb5f-41d6-9352-99b7b58d0fe5", rows[7][3]],
+        ["e31c8b6f-b5cb-45a7-8975-0de5fb55b6f7", rows[7][4]],
     ])
 
     staticSeats.forEach((value, key) => {
