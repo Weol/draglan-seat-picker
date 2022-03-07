@@ -80,7 +80,7 @@ namespace DragLanSeatPicker.Controllers
         private static async Task<User> FindUser(IDocumentClient client, string id)
         {
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri("draglan", "users");
-            var query = client.CreateDocumentQuery(collectionUri)
+            var query = client.CreateDocumentQuery(collectionUri, new FeedOptions {EnableCrossPartitionQuery = true})
                 .Where(x => x.Id == id)
                 .AsDocumentQuery();
 

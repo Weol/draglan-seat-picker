@@ -102,7 +102,7 @@ namespace DragLanSeatPicker.Controllers
         public static async Task<IActionResult> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "seats")] HttpRequest request, [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client, ILogger log)
         {
             var collectionUri = UriFactory.CreateDocumentCollectionUri("draglan", "seats");
-            var query = client.CreateDocumentQuery(collectionUri)
+            var query = client.CreateDocumentQuery(collectionUri, new FeedOptions {EnableCrossPartitionQuery = true})
                 .AsDocumentQuery();
 
             var seats = new List<Seat>();
@@ -147,7 +147,7 @@ namespace DragLanSeatPicker.Controllers
         private static async Task<Seat> FindSeatBySeatId(IDocumentClient client, string id)
         {
             var collectionUri = UriFactory.CreateDocumentCollectionUri("draglan", "seats");
-            var query = client.CreateDocumentQuery(collectionUri)
+            var query = client.CreateDocumentQuery(collectionUri, new FeedOptions {EnableCrossPartitionQuery = true})
                 .Where(x => x.Id == id)
                 .AsDocumentQuery();
 
