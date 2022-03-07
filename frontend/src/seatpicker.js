@@ -59,17 +59,30 @@ function SeatPicker(props) {
                 OnConfirm: (seat_id) => reserve(seat_id, () => {
                     props.SetMessage("success", "Reservasjon endret")
                     fetchAllSeats()
-                }, () => props.SetMessage("error", "Noe gikk galt, prøv på nytt"))
+                }, (response) => { 
+                    switch (response.status) {
+                        case 401:
+                            props.SetMessage("warning", "Ugyldig innlogging, logg in på nytt")
+                            props.Logout()
+                            break
+                        default:
+                            props.SetMessage("error", "Noe gikk galt, prøv på nytt")
+                    }
+                })
             })
         } else {
             reserve(seat.Id, () => {
                 props.SetMessage("success", "Plass reservert")
                 fetchAllSeats()
-            }, (status) => {
-                switch (status) {
+            }, (response) => {
+                switch (response.status) {
                     case 409:
                         props.SetMessage("warning", "Denne plassen var opptatt");
                         break;
+                    case 401:
+                        props.SetMessage("warning", "Ugyldig innlogging, logg in på nytt")
+                        props.Logout()
+                        break
                     default:
                         props.SetMessage("warning", "Noe gikk galt, vennligst prøv igjen")
                 }

@@ -46,7 +46,7 @@ function App() {
                 <Route path="/signin"
                        element={<SignIn SetMessage={doSetMessage} User={user} OnUserLoggedIn={setUser}/>}/>
                 <Route path="/signup" element={<SignUp SetMessage={doSetMessage} User={user}/>}/>
-                <Route path="/" element={<SeatPicker User={user} SetMessage={doSetMessage}/>}/>
+                <Route path="/" element={<SeatPicker User={user} SetMessage={doSetMessage} Logout={onLogout}/>}/>
             </Routes>
         </BrowserRouter>
     )
