@@ -31,7 +31,7 @@ export function signin(email, password, handler, failure) {
             Token: raw.token
         }
 
-        cookies.set("user", user, {path: "/"})
+        cookies.set("loggedInUser", user, {path: "/"})
 
         handler && handler(user);
     }).catch((error) => {
@@ -68,5 +68,5 @@ export function signup(email, password, name, handler, failure) {
 }
 
 export function logout() {
-    cookies.remove("user", {path: "/"})
+    cookies.remove("loggedInUser", {path: "/"})
 }

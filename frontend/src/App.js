@@ -11,7 +11,7 @@ import {logout} from "./api/users"
 const cookies = new Cookies();
 
 function App() {
-    const [user, setUser] = useState(cookies.get('user'));
+    const [user, setUser] = useState(cookies.get('loggedInUser'));
     const [message, setMessage] = useState(null);
 
     const doSetMessage = (type, message) => {

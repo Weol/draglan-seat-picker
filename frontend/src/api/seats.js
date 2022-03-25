@@ -28,7 +28,7 @@ export function getSeats(seats, handler, failure) {
 }
 
 export function reserve(seat_id, handler, failure) {
-    let user = cookies.get("user", {path: "/"})
+    let user = cookies.get("loggedInUser", {path: "/"})
 
     fetch(config.base_url + "seats", {
         method: "post",
@@ -51,7 +51,7 @@ export function reserve(seat_id, handler, failure) {
 }
 
 export function unreserve(seat_id, handler, failure) {
-    let user = cookies.get("user", {path: "/"})
+    let user = cookies.get("loggedInUser", {path: "/"})
 
     fetch(config.base_url + "seats/" + seat_id, {
         method: "delete",
