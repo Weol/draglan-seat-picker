@@ -33,7 +33,7 @@ function SeatPicker(props) {
 
     const reserveSeat = (seat) => {
         if (!props.User) {
-            props.SetMessage("warning", "Du må vær logga inn for å reserver et sete")
+            props.SetMessage("warning", "Du må være logget inn for å reservere et sete")
             return
         }
 
@@ -62,7 +62,7 @@ function SeatPicker(props) {
                 }, (response) => { 
                     switch (response.status) {
                         case 401:
-                            props.SetMessage("warning", "Ugyldig innlogging, logg in på nytt")
+                            props.SetMessage("warning", "Ugyldig innlogging, logg inn på nytt")
                             props.Logout()
                             break
                         default:
@@ -80,7 +80,7 @@ function SeatPicker(props) {
                         props.SetMessage("warning", "Denne plassen var opptatt");
                         break;
                     case 401:
-                        props.SetMessage("warning", "Ugyldig innlogging, logg in på nytt")
+                        props.SetMessage("warning", "Ugyldig innlogging, logg inn på nytt")
                         props.Logout()
                         break
                     default:
