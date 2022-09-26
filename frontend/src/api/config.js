@@ -1,4 +1,6 @@
 ﻿
+let hostname = window.location.hostname
+
 export default {
-    base_url: "https://draglan.azurewebsites.net/api/api/"
+    base_url: "https://" + hostname + "/api/api/"
 }
