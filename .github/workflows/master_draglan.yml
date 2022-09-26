@@ -56,3 +56,12 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_29E1F736BE9045CEB33250038BCB9AA4 }}
           package: .
+          
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp-2
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'saltenlan'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.SALTEN_PUBLISHPROFILE }}
+          package: .
