@@ -29,6 +29,8 @@ export default function createSeats(top, left, width, height) {
         createRow(reference, 9, 5, 26),
         createRow(reference, 12, 5, 31),
         createRow(reference, 13, 5, 36),
+        createRow(reference, 16, 5, 41),
+        createRow(reference, 17, 5, 46),
     ]
 
     const staticSeats = new Map([
@@ -72,6 +74,16 @@ export default function createSeats(top, left, width, height) {
         ["08d3d22a-87ab-45c5-86f5-6a8aaf1ebfb1", rows[7][2]],
         ["728b21e9-cb5f-41d6-9352-99b7b58d0fe5", rows[7][3]],
         ["e31c8b6f-b5cb-45a7-8975-0de5fb55b6f7", rows[7][4]],
+        ["46be0037-98ed-4888-9ac8-2d092ad57e7a", rows[8][0]],
+        ["876bd63e-da98-43f8-b435-01752ed4585b", rows[8][1]],
+        ["11ac1a9e-267f-4746-bd07-0a36765e78ff", rows[8][2]],
+        ["ba536e2c-eed4-4688-b657-a22671fa1329", rows[8][3]],
+        ["253ff4b7-80a3-4e30-bf24-7db207fb31e3", rows[8][4]],
+        ["011cb6bf-4ec8-458d-ba4d-a0643c16e086", rows[9][0]],
+        ["bfe787e8-23a0-4ffb-bb02-02cd7ae21788", rows[9][1]],
+        ["58d4120f-2520-4fad-a6a5-b7e4e181b0da", rows[9][2]],
+        ["50e5041a-118e-4059-8bf8-111506ad1cc1", rows[9][3]],
+        ["5a2e6317-d54c-4be3-bd29-b0db3841bf3a", rows[9][4]],
     ])
 
     staticSeats.forEach((value, key) => {
