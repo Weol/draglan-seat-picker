@@ -35,7 +35,7 @@ function App() {
                 <Toolbar>
                         <Link to="/" style={{textDecoration: 'none', flexGrow: 1, color: "inherit"}}>
                             <Typography variant="h6" component="div">
-                                SaltenLan
+                                SaltenLAN
                             </Typography>
                         </Link>
                     {user != null ? <UserProfileButton Logout={onLogout} User={user}/> :
